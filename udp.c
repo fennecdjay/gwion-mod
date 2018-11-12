@@ -18,7 +18,7 @@ ANN static void udp_send(Udp* const udp, const char* c) {
   const struct sockaddr_in addr = udp->saddr;
   if(sendto(udp->sock, c, strlen(c), 0,
             (struct sockaddr *) &addr, sizeof(addr)) < 1)
-    err_msg(UDP, 0, "problem while sending"); // LCOV_EXCL_LINE
+    err_msg(0, "problem while sending"); // LCOV_EXCL_LINE
 }
 
 ANN static m_bool udp_recv(const Udp* udp, char* buf) {
@@ -46,7 +46,7 @@ ANN static m_bool udp_recv(const Udp* udp, char* buf) {
 #endif
     ssize_t len;
     if((len = recvfrom(udp->sock, buf, 255, 0, (struct sockaddr*)&addr, &addrlen)) < 0)
-      ERR_B(UDP, 0, "recvfrom() failed") // LCOV_EXCL_LINE
+      ERR_B("recvfrom() failed") // LCOV_EXCL_LINE
     buf[len] = '\0';
     return 1;
 #ifndef __linux__
@@ -77,7 +77,7 @@ ANN static m_bool server_init(Udp* udp) {
   struct hostent * host;
   UdpIf* udpif = ((Arg*)udp->arg)->udp;
   if((udp->sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-    ERR_B(UDP, 0, "can't create socket")
+    ERR_B(0, "can't create socket")
 #ifndef __linux__
   set_nonblock(udp->sock);
 #endif
@@ -89,7 +89,7 @@ ANN static m_bool server_init(Udp* udp) {
     udp->saddr.sin_addr.s_addr = inet_addr(udpif->host);
     if((m_bool)udp->saddr.sin_addr.s_addr == -1) {
       udp->saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-      err_msg(UDP, 0, "%s not found. setting hostname to localhost",
+      err_msg(0, "%s not found. setting hostname to localhost",
           udpif->host);
       char** host = &udpif->host;
       *host = "localhost";
@@ -97,7 +97,7 @@ ANN static m_bool server_init(Udp* udp) {
   } else bcopy(host->h_addr_list[0], (char *)&udp->saddr.sin_addr, host->h_length);
   udp->saddr.sin_port = htons(udpif->port);
   if(bind(udp->sock, (struct sockaddr *) &udp->saddr, sizeof(udp->saddr)))
-    ERR_B(UDP, 0, "can't bind")
+    ERR_B(0, "can't bind")
   return 1;
 }
 
