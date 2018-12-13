@@ -4,7 +4,7 @@ languages:
   - name: cpp
     production:
       include:
-        - .*\.c
+        - /src/.*\.c
     test:
       include:
         - /tests/.*\.c
